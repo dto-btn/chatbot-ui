@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:chatbot_ui/messages.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -34,6 +37,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final url = "http://127.0.0.1:5000/query";
   final TextEditingController _controller = TextEditingController();
   List<Map<String, dynamic>> messages = [];
 
@@ -65,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   IconButton(
                     onPressed: () {
-                      sendMessage(_controller.text);
+                      sendMessage(_controller.text, url);
                       _controller.clear();
                     }, 
                     icon: Icon(Icons.send),
@@ -80,19 +84,40 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  sendMessage(String text) {
+  sendMessage(String text, String url) async {
     bool isUser = true;
-    if (isUser){
-      setState(() {
-        addMessage(text, isUser);
-      });
+    setState(() {
+      addMessage(text, isUser);
+    });
 
-      String response = "I don't understand...";
-      isUser = false;
+    final postRequest = await http.post(Uri.parse(url), 
+      body: jsonEncode(
+        {
+          "query": text,
+          "temp": 0.7,
+          "k": 3,
+          "debug": 1 
+        }
+      ), 
+      headers: {
+        "Content-Type": "application/json"
+      }
+    );
+
+    isUser = false;
+    if (postRequest.statusCode == 200){
+      var data = await jsonDecode(postRequest.body);
       setState(() {
-        addMessage(response, isUser);
+        addMessage(data['answer'], isUser);
+      });
+    } else {
+      setState(() {
+        addMessage("API is currently down...", false);
       });
     }
+    //http.Response response = await http.get(Uri.parse(url));
+  
+    
   }
 
   addMessage(String response, bool isUser) {
