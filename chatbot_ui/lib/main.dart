@@ -105,17 +105,23 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     isUser = false;
+    String sources = "";
     if (postRequest.statusCode == 200){
       var data = await jsonDecode(postRequest.body);
+      for (var i in data['metadata'].keys){
+         sources += data['metadata'][i]['url'] + "\n"; 
+      }
       setState(() {
         addMessage(data['answer'], isUser);
+      });
+      setState(() {
+        addMessage("Sources:\n" + sources, isUser);
       });
     } else {
       setState(() {
         addMessage("API is currently down...", false);
       });
     }
-    //http.Response response = await http.get(Uri.parse(url));
   
     
   }
