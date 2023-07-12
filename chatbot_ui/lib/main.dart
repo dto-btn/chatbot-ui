@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:chatbot_ui/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/link.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,6 +48,15 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        actions: <Widget>[
+          Link(
+            uri: Uri.parse('https://forms.office.com/r/dPvsZykMSy'),
+            builder: (context, followLink) => ElevatedButton(
+              onPressed: followLink, 
+              child: Text('Feedback')
+            )
+          )
+        ],
       ),
       body: Container(
         child: Column(
