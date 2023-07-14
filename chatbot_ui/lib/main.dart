@@ -50,12 +50,13 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         actions: <Widget>[
           Link(
+            target: LinkTarget.blank,
             uri: Uri.parse('https://forms.office.com/r/dPvsZykMSy'),
             builder: (context, followLink) => ElevatedButton(
               onPressed: followLink, 
               child: Text('Feedback')
             )
-          )
+          ),
         ],
       ),
       body: Container(
