@@ -60,6 +60,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+                Colors.blue.shade100.withOpacity(0.4),
+                Colors.purple.shade100.withOpacity(0.4)
+            ],
+          ),
+        ),
         child: Column(
           children: [
             Expanded(child: MessagesScreen(messages: messages)),
@@ -101,40 +109,41 @@ class _MyHomePageState extends State<MyHomePage> {
       addMessage(text, isUser);
     });
 
-    final postRequest = await http.post(Uri.parse(url), 
-      body: jsonEncode(
-        {
-          "query": text,
-          "temp": 0.7,
-          "k": 3,
-          "debug": 1 
+    try{
+      final postRequest = await http.post(Uri.parse(url), 
+        body: jsonEncode(
+          {
+            "query": text,
+            "temp": 0.7,
+            "k": 3,
+            "debug": 1 
+          }
+        ), 
+        headers: {
+          "Content-Type": "application/json"
         }
-      ), 
-      headers: {
-        "Content-Type": "application/json"
+      );
+      isUser = false;
+      String sources = "";
+      if (postRequest.statusCode == 200){
+        var data = await jsonDecode(postRequest.body);
+        for (var i in data['metadata'].keys){
+          sources += data['metadata'][i]['url'] + "\n"; 
+        }
+        setState(() {
+          addMessage(data['answer'], isUser);
+        });
+        setState(() {
+          addMessage("Sources:\n" + sources, isUser);
+        });
       }
-    );
-
-    isUser = false;
-    String sources = "";
-    if (postRequest.statusCode == 200){
-      var data = await jsonDecode(postRequest.body);
-      for (var i in data['metadata'].keys){
-         sources += data['metadata'][i]['url'] + "\n"; 
-      }
-      setState(() {
-        addMessage(data['answer'], isUser);
-      });
-      setState(() {
-        addMessage("Sources:\n" + sources, isUser);
-      });
-    } else {
+    }
+      
+    catch (e) {
       setState(() {
         addMessage("API is currently down...", false);
       });
     }
-  
-    
   }
 
   addMessage(String response, bool isUser) {
