@@ -38,7 +38,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final url = "http://127.0.0.1:5000/query";
+  final url = "http://localhost:5000/query";
   final TextEditingController _controller = TextEditingController();
   List<Map<String, dynamic>> messages = [];
 
@@ -99,7 +99,28 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ],
         )
-      )
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.deepPurpleAccent,
+        unselectedItemColor: Colors.grey.shade600,
+        selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
+        unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            label: "Chats",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group_work),
+            label: "Channels",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_box),
+            label: "Profile",
+          ),
+        ],
+      ),
     );
   }
 
@@ -108,38 +129,36 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       addMessage(text, isUser);
     });
-
-    try{
-      final postRequest = await http.post(Uri.parse(url), 
-        body: jsonEncode(
-          {
-            "query": text,
-            "temp": 0.7,
-            "k": 3,
-            "debug": 1 
-          }
-        ), 
-        headers: {
-          "Content-Type": "application/json"
+    debugPrint(text);
+    final postRequest = await http.post(Uri.parse(url), 
+      body: jsonEncode(
+        {
+          "query": text,
+          "temp": 0.7,
+          "k": 3,
+          "debug": 1 
         }
-      );
-      isUser = false;
-      String sources = "";
-      if (postRequest.statusCode == 200){
-        var data = await jsonDecode(postRequest.body);
-        for (var i in data['metadata'].keys){
-          sources += data['metadata'][i]['url'] + "\n"; 
-        }
-        setState(() {
-          addMessage(data['answer'], isUser);
-        });
-        setState(() {
-          addMessage("Sources:\n" + sources, isUser);
-        });
+      ), 
+      encoding: Encoding.getByName("utf-8"),
+      headers: {
+        "Content-Type": "application/json"
       }
-    }
-      
-    catch (e) {
+    );
+    
+    isUser = false;
+    String str_sources = "";
+    if (postRequest.statusCode == 200){
+      var data = await jsonDecode(postRequest.body);
+      for (var i in data['metadata'].keys){
+        str_sources += data['metadata'][i]['url'] + "\n"; 
+      }
+      setState(() {
+        addMessage(data['answer'], isUser);
+      });
+      setState(() {
+        addMessage("Sources:\n" + str_sources, isUser);
+      });
+    } else {
       setState(() {
         addMessage("API is currently down...", false);
       });
