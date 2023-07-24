@@ -40,6 +40,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                         //Text(widget.messages[index]['msg'])
                         Linkify(
                           text: widget.messages[index]['msg'],
+                          options: LinkifyOptions(humanize: false),
                           onOpen: (link) async {
                             await launchUrlString(link.url);
                           },

@@ -16,14 +16,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SSC Chatbot',
+      title: 'Azure Open AI Chatbot',
       theme: ThemeData(
 
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: 'SSC Chatbot'),
+      home: const MyHomePage(title: 'Azure Open AI Chatbot'),
     );
   }
 }
@@ -41,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final url = "http://localhost:5000/query";
   final TextEditingController _controller = TextEditingController();
   List<Map<String, dynamic>> messages = [];
+  bool? pretty = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +50,15 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: <Widget>[
+          Text("Chat History"),
+          Checkbox(
+            value: pretty, 
+            onChanged: (bool? newValue){
+              setState(() {
+                pretty = newValue;
+              });
+            }
+          ),
           Link(
             target: LinkTarget.blank,
             uri: Uri.parse('https://forms.office.com/r/dPvsZykMSy'),
@@ -136,7 +146,8 @@ class _MyHomePageState extends State<MyHomePage> {
           "query": text,
           "temp": 0.7,
           "k": 3,
-          "debug": 1 
+          "debug": 1, 
+          "pretty": pretty
         }
       ), 
       encoding: Encoding.getByName("utf-8"),
