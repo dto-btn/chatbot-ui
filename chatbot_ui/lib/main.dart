@@ -42,6 +42,9 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _controller = TextEditingController();
   List<Map<String, dynamic>> messages = [];
   bool? pretty = false;
+  bool isFr = false;
+  String isFrTxt = "French";
+  String lang = "en";
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +53,21 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: <Widget>[
+          ElevatedButton(
+            child: Text(isFrTxt),
+            onPressed: (){
+              setState(() {
+                isFr = !isFr;
+                if(isFr){
+                  lang = "fr";
+                  isFrTxt = "English";
+                } else {
+                  lang = "en";
+                  isFrTxt = "French";
+                }
+              });
+            }, 
+          ),
           Text("Chat History"),
           Checkbox(
             value: pretty, 
@@ -147,6 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
           "temp": 0.7,
           "k": 3,
           "debug": 1, 
+          "lang": lang,
           "pretty": pretty
         }
       ), 
